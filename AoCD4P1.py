@@ -1,32 +1,22 @@
+
 def func():
-    list3 =[]
-    input = [str(x.strip()) for x in open("input.txt",'r')]
-    xcounts = 0
+    input = sorted([str(x.strip()) for x in open("input.txt",'r')])
+    guards = {}
+    sleeping = 0
     for x in input:
-        overlaps = 0
-        number = 0
-        re1 = '.*?'  # Non-greedy match on filler
-        re2 = '(\\d+)'  # Integer Number 1
+        if "begins" in x:
+          current_guard = x.split(" ")[3]
+          if current_guard not in guards.keys():
+            guards[x.split(" ")[3]] = [0 for x in range(00,60)]
+        if "asleep" in x:
+            sleeping = int(x[15:17])
+        if "wakes" in x:
+            for y in range(sleeping,int(x.split(" ")[1][3:5])):
+                guards[current_guard][y] += 1
+    g = (sorted(guards.keys(), key = lambda g : -sum(guards[g]))[0])
+    guard_array = guards[g]
+    minute = guard_array.index(max(guard_array))
+    print(int(g[1:])*minute)
 
-        size = findSize(x)
-        coords = findCoords(x)
-        rg = re.compile(re1 + re2, re.IGNORECASE | re.DOTALL)
-        m = rg.search(x)
-        if m:
-            number = m.group(1)
-        for y in range(0,size[0]):
-            for z in range(0, size[1]):
-                if list1[coords[0]+y][coords[1] + z] != 0:
-                    if list1[coords[0]+y][coords[1] + z]!='X':
-                        xcounts += 1
-                        zz =  list1[coords[0]+y][coords[1] + z] in list3
-                        if int(list1[coords[0]+y][coords[1] + z]) in list3:
-                            list3.remove(list1[coords[0]+y][coords[1] + z])
-                    list1[coords[0]+y][coords[1] + z] = 'X'
-                    overlaps+=1
 
-                else:
-                    list1[coords[0]+y][coords[1] + z] = int(number)
-        if(overlaps == 0):
-            list3.append(int(number))
-    print(list3)
+func()
